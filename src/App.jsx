@@ -723,6 +723,22 @@ function App() {
     if (e.target.files) handleFileUpload(e.target.files);
   };
 
+  const toggleFileAssociation = (fileName) => {
+    setLogForm(prev => {
+      const alreadyAttached = prev.files.includes(fileName);
+      const updatedFiles = alreadyAttached
+        ? prev.files.filter(f => f !== fileName)
+        : [...prev.files, fileName];
+      return { ...prev, files: updatedFiles };
+    });
+  };
+
+  const triggerFileInput = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
   // Save Settings
   const handleSaveSettings = (e) => {
     e.preventDefault();
