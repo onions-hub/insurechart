@@ -201,7 +201,7 @@ export async function scanCloudCustomers() {
 }
 
 // Create new customer inside GDrive Cloud
-export async function createCloudCustomer(name, category, address = '', birthday = '', contractDate = '') {
+export async function createCloudCustomer(name, category, address = '', birthday = '', contractDate = '', job = '') {
   try {
     // 1. Bootstrap standard folders to make sure root & category exist
     const { folderMap } = await bootstrapCloudFolders();
@@ -220,7 +220,7 @@ export async function createCloudCustomer(name, category, address = '', birthday
     const customerFolderId = await createFolder(name, categoryFolderId);
 
     // 4. Create 상담일지.json
-    const profile = { name, category, address, birthday, contractDate };
+    const profile = { name, category, address, birthday, contractDate, job };
     const initialJsonContent = JSON.stringify({ profile, logs: [] }, null, 2);
     await createFileInFolder(customerFolderId, '상담일지.json', initialJsonContent, 'application/json');
 
@@ -228,6 +228,7 @@ export async function createCloudCustomer(name, category, address = '', birthday
     let txtContent = `==================================================\n`;
     txtContent += ` [고객 보장 분석 및 상담 일지 - ${name}]\n`;
     txtContent += `==================================================\n`;
+    txtContent += `- 직업: ${profile.job || '미입력'}\n`;
     txtContent += `- 주소: ${profile.address || '미입력'}\n`;
     txtContent += `- 생년월일: ${profile.birthday || '미입력'}\n`;
     txtContent += `- 계약일자: ${profile.contractDate || '미입력'}\n`;
@@ -254,7 +255,8 @@ export async function updateCloudCustomerProfile(folderId, profileData, existing
       ...existingDetails.profile,
       address: profileData.address !== undefined ? profileData.address : existingDetails.profile.address,
       birthday: profileData.birthday !== undefined ? profileData.birthday : existingDetails.profile.birthday,
-      contractDate: profileData.contractDate !== undefined ? profileData.contractDate : existingDetails.profile.contractDate
+      contractDate: profileData.contractDate !== undefined ? profileData.contractDate : existingDetails.profile.contractDate,
+      job: profileData.job !== undefined ? profileData.job : existingDetails.profile.job
     };
 
     const logsContent = JSON.stringify({ profile: updatedProfile, logs: existingDetails.logs }, null, 2);
@@ -280,6 +282,7 @@ export async function updateCloudCustomerProfile(folderId, profileData, existing
     let txtContent = `==================================================\n`;
     txtContent += ` [고객 보장 분석 및 상담 일지 - ${existingDetails.name}]\n`;
     txtContent += `==================================================\n`;
+    txtContent += `- 직업: ${updatedProfile.job || '미입력'}\n`;
     txtContent += `- 주소: ${updatedProfile.address || '미입력'}\n`;
     txtContent += `- 생년월일: ${updatedProfile.birthday || '미입력'}\n`;
     txtContent += `- 계약일자: ${updatedProfile.contractDate || '미입력'}\n`;

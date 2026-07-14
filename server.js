@@ -89,6 +89,7 @@ app.get('/api/customers', (req, res) => {
           let address = '';
           let birthday = '';
           let contractDate = '';
+          let job = '';
 
           if (hasLogs) {
             try {
@@ -97,6 +98,7 @@ app.get('/api/customers', (req, res) => {
                 address = fileContent.profile.address || '';
                 birthday = fileContent.profile.birthday || '';
                 contractDate = fileContent.profile.contractDate || '';
+                job = fileContent.profile.job || '';
               }
             } catch (e) {
               // ignore parse errors
@@ -111,7 +113,8 @@ app.get('/api/customers', (req, res) => {
             path: customerPath,
             address,
             birthday,
-            contractDate
+            contractDate,
+            job
           });
         }
       }
@@ -164,7 +167,7 @@ app.get('/api/customers/details', (req, res) => {
     // Read consultation logs & profile info
     const logsPath = path.join(customerPath, '상담일지.json');
     let logs = [];
-    let profile = { name, category, address: '', birthday: '', contractDate: '' };
+    let profile = { name, category, address: '', birthday: '', contractDate: '', job: '' };
 
     if (fs.existsSync(logsPath)) {
       try {
@@ -280,7 +283,7 @@ app.post('/api/customers/logs', (req, res) => {
 
 // API: Register new customer & auto-create folders (Local Bootstrapper)
 app.post('/api/customers', (req, res) => {
-  const { name, category, address, birthday, contractDate } = req.body;
+  const { name, category, address, birthday, contractDate, job } = req.body;
   if (!name || !category) {
     return res.status(400).json({ error: 'Name and category are required' });
   }
@@ -311,7 +314,7 @@ app.post('/api/customers', (req, res) => {
 
     // 4. Initialize 상담일지.json with profile info
     const logsPath = path.join(customerPath, '상담일지.json');
-    const profile = { name, category, address: address || '', birthday: birthday || '', contractDate: contractDate || '' };
+    const profile = { name, category, address: address || '', birthday: birthday || '', contractDate: contractDate || '', job: job || '' };
     fs.writeFileSync(logsPath, JSON.stringify({ profile, logs: [] }, null, 2), 'utf8');
 
     // 5. Initialize 상담일지_뷰어.txt
@@ -319,6 +322,7 @@ app.post('/api/customers', (req, res) => {
     let txtContent = `==================================================\n`;
     txtContent += ` [고객 보장 분석 및 상담 일지 - ${name}]\n`;
     txtContent += `==================================================\n`;
+    txtContent += `- 직업: ${profile.job || '미입력'}\n`;
     txtContent += `- 주소: ${profile.address || '미입력'}\n`;
     txtContent += `- 생년월일: ${profile.birthday || '미입력'}\n`;
     txtContent += `- 계약일자: ${profile.contractDate || '미입력'}\n`;
@@ -348,7 +352,7 @@ app.post('/api/customers/profile', (req, res) => {
 
     const logsPath = path.join(customerPath, '상담일지.json');
     let logs = [];
-    let oldProfile = { name, category, address: '', birthday: '', contractDate: '' };
+    let oldProfile = { name, category, address: '', birthday: '', contractDate: '', job: '' };
 
     if (fs.existsSync(logsPath)) {
       try {
@@ -370,6 +374,7 @@ app.post('/api/customers/profile', (req, res) => {
       address: profile.address !== undefined ? profile.address : oldProfile.address,
       birthday: profile.birthday !== undefined ? profile.birthday : oldProfile.birthday,
       contractDate: profile.contractDate !== undefined ? profile.contractDate : oldProfile.contractDate,
+      job: profile.job !== undefined ? profile.job : oldProfile.job
     };
 
     // Save JSON
@@ -380,6 +385,7 @@ app.post('/api/customers/profile', (req, res) => {
     let txtContent = `==================================================\n`;
     txtContent += ` [고객 보장 분석 및 상담 일지 - ${name}]\n`;
     txtContent += `==================================================\n`;
+    txtContent += `- 직업: ${updatedProfile.job || '미입력'}\n`;
     txtContent += `- 주소: ${updatedProfile.address || '미입력'}\n`;
     txtContent += `- 생년월일: ${updatedProfile.birthday || '미입력'}\n`;
     txtContent += `- 계약일자: ${updatedProfile.contractDate || '미입력'}\n`;

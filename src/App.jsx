@@ -184,6 +184,7 @@ function App() {
     address: '',
     birthday: '',
     contractDate: '',
+    job: '',
     syncCalendarBirthday: false,
     syncCalendarContract: false
   });
@@ -192,7 +193,8 @@ function App() {
   const [profileEditForm, setProfileEditForm] = useState({
     address: '',
     birthday: '',
-    contractDate: ''
+    contractDate: '',
+    job: ''
   });
 
   // Digital Business Card Builder State
@@ -249,6 +251,61 @@ function App() {
       return () => clearTimeout(timer);
     }
   }, [toast]);
+
+  // Load Google Maps API globally with places library
+  useEffect(() => {
+    if (apiKey && (!window.google || !window.google.maps)) {
+      const script = document.createElement('script');
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places`;
+      script.async = true;
+      script.defer = true;
+      document.head.appendChild(script);
+    }
+  }, [apiKey]);
+
+  // Google Places Autocomplete for Registration Modal
+  useEffect(() => {
+    if (showRegisterModal && window.google && window.google.maps && window.google.maps.places) {
+      const timer = setTimeout(() => {
+        const input = document.getElementById('register-address-input');
+        if (input) {
+          const autocomplete = new window.google.maps.places.Autocomplete(input, {
+            types: ['address'],
+            componentRestrictions: { country: 'kr' }
+          });
+          autocomplete.addListener('place_changed', () => {
+            const place = autocomplete.getPlace();
+            if (place && place.formatted_address) {
+              setRegisterForm(prev => ({ ...prev, address: place.formatted_address }));
+            }
+          });
+        }
+      }, 150);
+      return () => clearTimeout(timer);
+    }
+  }, [showRegisterModal]);
+
+  // Google Places Autocomplete for Edit Profile Modal
+  useEffect(() => {
+    if (showEditProfileModal && window.google && window.google.maps && window.google.maps.places) {
+      const timer = setTimeout(() => {
+        const input = document.getElementById('edit-address-input');
+        if (input) {
+          const autocomplete = new window.google.maps.places.Autocomplete(input, {
+            types: ['address'],
+            componentRestrictions: { country: 'kr' }
+          });
+          autocomplete.addListener('place_changed', () => {
+            const place = autocomplete.getPlace();
+            if (place && place.formatted_address) {
+              setProfileEditForm(prev => ({ ...prev, address: place.formatted_address }));
+            }
+          });
+        }
+      }, 150);
+      return () => clearTimeout(timer);
+    }
+  }, [showEditProfileModal]);
 
   // Load clients based on connection mode
   useEffect(() => {
@@ -360,7 +417,7 @@ function App() {
           path: `Google Drive > 01_장기보험_고객관리 > ${customer.category} > ${customer.name}`,
           files: data.files,
           logs: data.logs,
-          profile: data.profile || { name: customer.name, category: customer.category, address: '', birthday: '', contractDate: '' }
+          profile: data.profile || { name: customer.name, category: customer.category, address: '', birthday: '', contractDate: '', job: '' }
         });
       } else {
         const res = await fetch(`/api/customers/details?category=${encodeURIComponent(customer.category)}&name=${encodeURIComponent(customer.name)}`);
@@ -432,7 +489,8 @@ function App() {
           finalCategory,
           registerForm.address,
           registerForm.birthday,
-          registerForm.contractDate
+          registerForm.contractDate,
+          registerForm.job
         );
 
         // Sync to Google Calendar if requested
@@ -461,7 +519,8 @@ function App() {
             category: finalCategory,
             address: registerForm.address,
             birthday: registerForm.birthday,
-            contractDate: registerForm.contractDate
+            contractDate: registerForm.contractDate,
+            job: registerForm.job
           })
         });
 
@@ -480,6 +539,7 @@ function App() {
         address: '',
         birthday: '',
         contractDate: '',
+        job: '',
         syncCalendarBirthday: false,
         syncCalendarContract: false
       });
@@ -500,7 +560,8 @@ function App() {
     setProfileEditForm({
       address: customerDetails.profile.address || '',
       birthday: customerDetails.profile.birthday || '',
-      contractDate: customerDetails.profile.contractDate || ''
+      contractDate: customerDetails.profile.contractDate || '',
+      job: customerDetails.profile.job || ''
     });
     setShowEditProfileModal(true);
   };
@@ -1073,6 +1134,13 @@ function App() {
                   {customerDetails && (
                     <div className="profile-meta-panel">
                       <div className="profile-meta-item">
+                        <span className="profile-meta-label">💼 고객 직업</span>
+                        <span className="profile-meta-value">
+                          <User size={13} style={{ color: 'hsl(var(--accent))' }} />
+                          {customerDetails.profile.job || '직업 미입력'}
+                        </span>
+                      </div>
+                      <div className="profile-meta-item">
                         <span className="profile-meta-label">📍 고객 거주 주소</span>
                         <span className="profile-meta-value" title={customerDetails.profile.address}>
                           <MapPin size={13} style={{ color: 'hsl(var(--accent))' }} />
@@ -1546,6 +1614,17 @@ function App() {
                     required 
                   />
                 </div>
+
+                <div>
+                  <label className="form-label">💼 고객 직업</label>
+                  <input 
+                    type="text" 
+                    value={registerForm.job} 
+                    onChange={(e) => setRegisterForm(prev => ({ ...prev, job: e.target.value }))} 
+                    placeholder="회사원, 자영업, 주부 등" 
+                    className="form-input" 
+                  />
+                </div>
                 
                 <div>
                   <label className="form-label">분류 지정 (자음별 자동 매칭 적용)</label>
@@ -1568,6 +1647,7 @@ function App() {
                   <label className="form-label">📍 거주 주소 (지도 연동용)</label>
                   <input 
                     type="text" 
+                    id="register-address-input"
                     value={registerForm.address} 
                     onChange={(e) => setRegisterForm(prev => ({ ...prev, address: e.target.value }))} 
                     placeholder="서울특별시 강남구 테헤란로 123" 
@@ -1635,9 +1715,20 @@ function App() {
             <form onSubmit={handleSaveProfile}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '20px' }}>
                 <div>
+                  <label className="form-label">💼 고객 직업</label>
+                  <input 
+                    type="text" 
+                    value={profileEditForm.job} 
+                    onChange={(e) => setProfileEditForm(prev => ({ ...prev, job: e.target.value }))} 
+                    placeholder="회사원, 자영업, 주부 등"
+                    className="form-input" 
+                  />
+                </div>
+                <div>
                   <label className="form-label">📍 고객 거주 주소</label>
                   <input 
                     type="text" 
+                    id="edit-address-input"
                     value={profileEditForm.address} 
                     onChange={(e) => setProfileEditForm(prev => ({ ...prev, address: e.target.value }))} 
                     className="form-input" 
