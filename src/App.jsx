@@ -350,6 +350,7 @@ function App() {
 
   const fetchCustomerDetails = async (customer) => {
     setIsDetailsLoading(true);
+    setSelectedCustomer(customer); // Set immediately to update header title instantly
     try {
       if (connectionMode === 'cloud') {
         const data = await getCloudCustomerDetails(customer.folderId);
@@ -367,7 +368,6 @@ function App() {
         const data = await res.json();
         setCustomerDetails(data);
       }
-      setSelectedCustomer(customer);
       setLogForm({
         date: new Date().toISOString().split('T')[0],
         type: '장기보험',
