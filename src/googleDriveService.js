@@ -323,31 +323,51 @@ export async function updateCloudCustomerProfile(folderId, profileData, existing
 // Get customer details (files, logs, profile metadata)
 export async function getCloudCustomerDetails(folderId) {
   try {
-    const response = await window.gapi.client.drive.files.list({
-      q: `'${folderId}' in parents and trashed = false`,
-      fields: 'files(id, name, mimeType, size, modifiedTime, webViewLink)',
-      pageSize: 1000
-    });
+    // Recursive GDrive scanner
+    async function fetchFilesRecursive(parentId, folderPath = "") {
+      const response = await window.gapi.client.drive.files.list({
+        q: `'${parentId}' in parents and trashed = false`,
+        fields: 'files(id, name, mimeType, size, modifiedTime, webViewLink)',
+        pageSize: 1000
+      });
+      
+      const items = response.result.files || [];
+      let results = [];
+      
+      for (const item of items) {
+        if (item.name === '상담일지.json' || item.name === '상담일지_뷰어.txt') continue;
+        
+        if (item.mimeType === 'application/vnd.google-apps.folder') {
+          const subFolderFiles = await fetchFilesRecursive(item.id, folderPath ? `${folderPath}/${item.name}` : item.name);
+          results = results.concat(subFolderFiles);
+        } else {
+          const ext = item.name.includes('.') ? item.name.substring(item.name.lastIndexOf('.')) : '';
+          results.push({
+            name: item.name,
+            id: item.id,
+            size: parseInt(item.size || '0'),
+            modified: item.modifiedTime,
+            ext: ext.toLowerCase(),
+            webViewLink: item.webViewLink,
+            folder: folderPath
+          });
+        }
+      }
+      return results;
+    }
 
-    const allFiles = response.result.files || [];
-    const files = [];
+    const files = await fetchFilesRecursive(folderId);
     let logFileId = null;
     let logFileContent = { logs: [], profile: {} };
 
-    for (const file of allFiles) {
-      if (file.name === '상담일지.json') {
-        logFileId = file.id;
-      } else if (file.name !== '상담일지_뷰어.txt' && file.mimeType !== 'application/vnd.google-apps.folder') {
-        const ext = file.name.includes('.') ? file.name.substring(file.name.lastIndexOf('.')) : '';
-        files.push({
-          name: file.name,
-          id: file.id,
-          size: parseInt(file.size || '0'),
-          modified: file.modifiedTime,
-          ext: ext.toLowerCase(),
-          webViewLink: file.webViewLink
-        });
-      }
+    // Find the logFileId in the root customer folder
+    const logSearchResponse = await window.gapi.client.drive.files.list({
+      q: `'${folderId}' in parents and name = '상담일지.json' and trashed = false`,
+      fields: 'files(id)'
+    });
+    const logFiles = logSearchResponse.result.files || [];
+    if (logFiles.length > 0) {
+      logFileId = logFiles[0].id;
     }
 
     if (logFileId) {

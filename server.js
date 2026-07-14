@@ -138,23 +138,28 @@ app.get('/api/customers/details', (req, res) => {
       return res.status(404).json({ error: 'Customer folder not found' });
     }
 
-    // Read files
-    const allFiles = fs.readdirSync(customerPath);
+    // Read files recursively
     const files = [];
-
-    for (const file of allFiles) {
-      const filePath = path.join(customerPath, file);
-      const stat = fs.statSync(filePath);
-      
-      if (stat.isFile() && file !== '상담일지.json' && file !== '상담일지_뷰어.txt') {
-        files.push({
-          name: file,
-          size: stat.size,
-          modified: stat.mtime,
-          ext: path.extname(file).toLowerCase()
-        });
+    function scanDir(dirPath, relativeFolder = "") {
+      const items = fs.readdirSync(dirPath);
+      for (const item of items) {
+        if (item === '상담일지.json' || item === '상담일지_뷰어.txt' || item.startsWith('.')) continue;
+        const fullPath = path.join(dirPath, item);
+        const stat = fs.statSync(fullPath);
+        if (stat.isDirectory()) {
+          scanDir(fullPath, relativeFolder ? `${relativeFolder}/${item}` : item);
+        } else if (stat.isFile()) {
+          files.push({
+            name: item,
+            size: stat.size,
+            modified: stat.mtime,
+            ext: path.extname(item).toLowerCase(),
+            folder: relativeFolder
+          });
+        }
       }
     }
+    scanDir(customerPath);
 
     // Read consultation logs & profile info
     const logsPath = path.join(customerPath, '상담일지.json');
@@ -436,14 +441,14 @@ app.post('/api/customers/open-folder', (req, res) => {
 
 // API: Open file
 app.post('/api/customers/open-file', (req, res) => {
-  const { category, name, fileName } = req.body;
+  const { category, name, fileName, folder } = req.body;
   if (!category || !name || !fileName) {
     return res.status(400).json({ error: 'Category, name, and fileName are required' });
   }
 
   try {
     const customerPath = getCustomerPath(category, name);
-    const filePath = path.join(customerPath, fileName);
+    const filePath = folder ? path.join(customerPath, folder, fileName) : path.join(customerPath, fileName);
     
     if (!fs.existsSync(filePath)) {
       return res.status(404).json({ error: 'File not found' });

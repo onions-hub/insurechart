@@ -175,6 +175,7 @@ function App() {
   // Modals & Forms
   const [showRegisterModal, setShowRegisterModal] = useState(false);
   const [showEditProfileModal, setShowEditProfileModal] = useState(false);
+  const [collapsedFolders, setCollapsedFolders] = useState({});
 
   // Client Registration Form State
   const [registerForm, setRegisterForm] = useState({
@@ -667,7 +668,7 @@ function App() {
         const res = await fetch('/api/customers/open-file', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ category: selectedCustomer.category, name: selectedCustomer.name, fileName: file.name })
+          body: JSON.stringify({ category: selectedCustomer.category, name: selectedCustomer.name, fileName: file.name, folder: file.folder })
         });
         if (!res.ok) throw new Error('파일을 열 수 없습니다.');
         showToast('success', `${file.name} 파일을 실행했습니다.`);
@@ -1230,20 +1231,76 @@ function App() {
                       {customerDetails?.files?.length === 0 ? (
                         <div style={{ textAlign: 'center', padding: '30px 10px', color: 'hsl(var(--text-muted))', fontSize: '12px' }}>보관함이 비어있습니다.</div>
                       ) : (
-                        customerDetails.files.map(file => (
-                          <div key={file.name || file.id} className="file-item animate-fade-in">
-                            <div style={{ display: 'flex', alignItems: 'center', overflow: 'hidden', flex: 1 }}>
-                              {getFileIcon(file.ext)}
-                              <div className="file-info">
-                                <span className="file-name" title={file.name}>{file.name}</span>
-                                <span className="file-meta">{formatBytes(file.size)} · {new Date(file.modified).toLocaleDateString()}</span>
+                        (() => {
+                          const groupedFiles = {};
+                          customerDetails.files.forEach(file => {
+                            const folderName = file.folder || '';
+                            if (!groupedFiles[folderName]) {
+                              groupedFiles[folderName] = [];
+                            }
+                            groupedFiles[folderName].push(file);
+                          });
+
+                          return Object.entries(groupedFiles).map(([folderName, folderFiles]) => {
+                            if (folderName === '') {
+                              return folderFiles.map(file => (
+                                <div key={file.name || file.id} className="file-item animate-fade-in" style={{ marginBottom: '6px' }}>
+                                  <div style={{ display: 'flex', alignItems: 'center', overflow: 'hidden', flex: 1 }}>
+                                    {getFileIcon(file.ext)}
+                                    <div className="file-info">
+                                      <span className="file-name" title={file.name}>{file.name}</span>
+                                      <span className="file-meta">{formatBytes(file.size)} · {new Date(file.modified).toLocaleDateString()}</span>
+                                    </div>
+                                  </div>
+                                  <div className="file-actions">
+                                    <button onClick={() => handleOpenFile(file)} className="btn-icon" title="파일 열기"><ExternalLink size={14} /></button>
+                                  </div>
+                                </div>
+                              ));
+                            }
+
+                            const isCollapsed = collapsedFolders[folderName] ?? true;
+                            return (
+                              <div key={folderName} className="folder-group" style={{ marginBottom: '8px' }}>
+                                <div 
+                                  onClick={() => setCollapsedFolders(prev => ({ ...prev, [folderName]: !isCollapsed }))}
+                                  style={{
+                                    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                                    padding: '8px 12px', cursor: 'pointer', backgroundColor: 'hsl(var(--bg-main) / 0.7)',
+                                    borderRadius: 'var(--radius-sm)', border: '1px solid hsl(var(--border))',
+                                    fontSize: '12px', fontWeight: 'bold', color: 'hsl(var(--primary))'
+                                  }}
+                                >
+                                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                    <Folder size={14} style={{ color: 'hsl(var(--accent))' }} />
+                                    <span>{folderName}</span>
+                                    <span style={{ fontSize: '10px', color: 'hsl(var(--text-muted))', fontWeight: 'normal' }}>({folderFiles.length})</span>
+                                  </div>
+                                  <ChevronRight size={14} style={{ transform: isCollapsed ? 'rotate(0deg)' : 'rotate(90deg)', transition: 'transform 0.2s' }} />
+                                </div>
+                                
+                                {!isCollapsed && (
+                                  <div style={{ paddingLeft: '8px', marginTop: '6px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                                    {folderFiles.map(file => (
+                                      <div key={file.name || file.id} className="file-item animate-fade-in" style={{ padding: '8px 10px' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', overflow: 'hidden', flex: 1 }}>
+                                          {getFileIcon(file.ext)}
+                                          <div className="file-info" style={{ margin: '0 8px' }}>
+                                            <span className="file-name" title={file.name} style={{ fontSize: '11.5px' }}>{file.name}</span>
+                                            <span className="file-meta" style={{ fontSize: '9px' }}>{formatBytes(file.size)}</span>
+                                          </div>
+                                        </div>
+                                        <div className="file-actions">
+                                          <button onClick={() => handleOpenFile(file)} className="btn-icon" title="파일 열기" style={{ padding: '4px' }}><ExternalLink size={12} /></button>
+                                        </div>
+                                      </div>
+                                    ))}
+                                  </div>
+                                )}
                               </div>
-                            </div>
-                            <div className="file-actions">
-                              <button onClick={() => handleOpenFile(file)} className="btn-icon" title="파일 열기"><ExternalLink size={14} /></button>
-                            </div>
-                          </div>
-                        ))
+                            );
+                          });
+                        })()
                       )}
                     </div>
                     <div className={`drag-drop-zone ${isDragging ? 'active' : ''}`} onDragOver={handleDragOver} onDragLeave={handleDragLeave} onDrop={handleDrop} onClick={triggerFileInput}>
