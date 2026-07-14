@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>InsureChart Hub - 보험 설계사용 사용 설명서</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #1e3a8a;
+      --primary-light: #3b82f6;
+      --accent: #10b981;
+      --text-main: #1f2937;
+      --text-muted: #6b7280;
+      --bg-main: #f9fafb;
+      --bg-card: #ffffff;
+      --border: #e5e7eb;
+      --radius: 8px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Noto Sans KR', 'Inter', sans-serif;
+      color: var(--text-main);
+      background-color: var(--bg-main);
+      line-height: 1.7;
+      padding: 40px 20px;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      background-color: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 50px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+    }
+
+    header {
+      border-bottom: 2px solid var(--primary);
+      padding-bottom: 24px;
+      margin-bottom: 40px;
+      text-align: center;
+    }
+
+    .logo {
+      font-weight: 900;
+      font-size: 28px;
+      color: var(--primary);
+      letter-spacing: -1px;
+      margin-bottom: 8px;
+    }
+
+    .logo span {
+      color: var(--accent);
+    }
+
+    header h1 {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 12px;
+    }
+
+    .subtitle {
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+
+    h2 {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--primary);
+      border-left: 4px solid var(--accent);
+      padding-left: 12px;
+      margin-top: 40px;
+      margin-bottom: 20px;
+    }
+
+    h3 {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-top: 24px;
+      margin-bottom: 10px;
+    }
+
+    p {
+      font-size: 14px;
+      color: #374151;
+      margin-bottom: 16px;
+    }
+
+    ul, ol {
+      margin-left: 24px;
+      margin-bottom: 20px;
+      font-size: 14px;
+    }
+
+    li {
+      margin-bottom: 8px;
+    }
+
+    strong {
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .alert {
+      background-color: #eff6ff;
+      border-left: 4px solid var(--primary-light);
+      padding: 16px;
+      border-radius: var(--radius);
+      margin-bottom: 24px;
+      font-size: 13.5px;
+    }
+
+    .alert-accent {
+      background-color: #ecfdf5;
+      border-left: 4px solid var(--accent);
+      padding: 16px;
+      border-radius: var(--radius);
+      margin-bottom: 24px;
+      font-size: 13.5px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 24px;
+      font-size: 13px;
+    }
+
+    th, td {
+      border: 1px solid var(--border);
+      padding: 10px 12px;
+      text-align: left;
+    }
+
+    th {
+      background-color: var(--bg-main);
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .print-btn {
+      display: block;
+      width: 200px;
+      margin: 30px auto 0;
+      padding: 12px 24px;
+      background-color: var(--primary);
+      color: white;
+      text-align: center;
+      font-weight: 700;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background-color 0.2s;
+    }
+
+    .print-btn:hover {
+      background-color: var(--primary-light);
+    }
+
+    .step-img-box {
+      background-color: #f3f4f6;
+      border: 1px dashed var(--border);
+      border-radius: 6px;
+      padding: 20px;
+      text-align: center;
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 20px;
+    }
+
+    /* Print styling */
+    @media print {
+      body {
+        background-color: white;
+        padding: 0;
+      }
+      .container {
+        border: none;
+        box-shadow: none;
+        padding: 0;
+        max-width: 100%;
+      }
+      .print-btn {
+        display: none;
+      }
+      h2 {
+        page-break-before: always;
+      }
+      h2:first-of-type {
+        page-break-before: avoid;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <div class="logo">Insure<span>Chart</span> Hub</div>
+      <h1>보험 설계사 스마트 고객관리 시스템 사용설명서</h1>
+      <div class="subtitle">작성일: 2026년 7월 | 버전: 1.0 (배포판)</div>
+    </header>
+
+    <div class="alert">
+      <strong>💡 이 문서는 인쇄에 최적화되어 있습니다:</strong><br>
+      이 화면 하단의 <strong>[PDF 매뉴얼 인쇄하기]</strong> 버튼을 누르시면, 불필요한 레이아웃 없이 깔끔한 종이 책자 또는 PDF 파일로 즉시 저장 및 인쇄하실 수 있습니다.
+    </div>
+
+    <h2>1. 시스템 개요</h2>
+    <p>
+      본 프로그램은 보험 설계사들이 고객 관리, 기존 보장 분석, 가입 제안 이력, 그리고 종이 청구서 및 심사 서류 파일을 **구글 드라이브 클라우드** 또는 **개인 PC 저장공간**을 통해 효과적으로 제어할 수 있는 스마트 상담 차트 웹 솔루션입니다.
+    </p>
+    <p>
+      설계사 개인의 Google 계정과 직접 연동되므로, 어떠한 외부 서버에도 고객의 정보가 유출되지 않아 **개인정보보호(영업 기밀)** 측면에서 완벽한 독립성과 안정성을 보장합니다.
+    </p>
+
+    <h2>2. 구글 클라우드 초기 세팅 방법 (최초 1회 필수)</h2>
+    <p>
+      본 프로그램을 모바일이나 외부에서 원활하게 사용하려면 설계사 본인의 구글 개발자 프로젝트(GCP)에서 키를 발급받아 환경 설정에 입력해야 합니다.
+    </p>
+    
+    <h3>[1단계] 구글 API 콘솔 접속 및 프로젝트 생성</h3>
+    <ol>
+      <li>웹 브라우저에서 <strong><a href="https://console.cloud.google.com" target="_blank">구글 클라우드 콘솔</a></strong>에 접속하여 로그인합니다.</li>
+      <li>좌측 상단의 프로젝트 목록을 클릭하고 <strong>[새 프로젝트]</strong>를 만듭니다 (예: <code>InsureChart-Client</code>).</li>
+    </ol>
+
+    <h3>[2단계] 필수 API 라이브러리 활성화</h3>
+    <p>사용자 정보, 고객 폴더 검색, 지도 마킹 및 캘린더 등록을 위해 다음 4개의 API를 반드시 활성화해야 합니다.</p>
+    <ol>
+      <li>콘솔 상단 검색창에 아래 명칭을 각각 검색하여 <strong>[사용]</strong> 버튼을 클릭합니다.
+        <ul>
+          <li><strong>Google Drive API</strong> (파일/폴더 저장)</li>
+          <li><strong>Google Calendar API</strong> (생일/계약일 일정 연동)</li>
+          <li><strong>Geocoding API</strong> (주소 좌표 변환)</li>
+          <li><strong>Maps JavaScript API</strong> (고객 위치 지도 렌더링)</li>
+        </ul>
+      </li>
+    </ol>
+
+    <h3>[3단계] OAuth 동의 화면 및 범위 지정</h3>
+    <ol>
+      <li>좌측 메뉴에서 <strong>[API 및 서비스] -> [OAuth 동의 화면]</strong>으로 진입합니다.</li>
+      <li>User Type을 <strong>[외부(External)]</strong>로 설정하고 만들기 버튼을 클릭합니다.</li>
+      <li>앱 정보 입력 후 <strong>[범위 추가 또는 삭제]</strong> 버튼을 누르고 아래의 범위를 반드시 추가합니다.
+        <ul>
+          <li><code>.../auth/drive.file</code> (설계사가 등록한 파일 및 폴더 읽기/쓰기 권한)</li>
+          <li><code>.../auth/calendar.events</code> (구글 캘린더 일정 추가/수정 권한)</li>
+        </ul>
+      </li>
+      <li>테스트 사용자 탭에서 **[사용자 추가]**를 눌러 로그인할 본인의 구글 이메일을 등록해 줍니다.</li>
+    </ol>
+
+    <h3>[4단계] 인증 정보 발급 및 도메인 등록</h3>
+    <ol>
+      <li>좌측 메뉴 <strong>[사용자 인증 정보]</strong>로 이동합니다.</li>
+      <li><strong>[+ 사용자 인증 정보 만들기] -> [API 키]</strong>를 눌러 API 키를 발급받습니다.</li>
+      <li>다시 <strong>[+ 사용자 인증 정보 만들기] -> [OAuth 클라이언트 ID]</strong>를 클릭합니다.
+        <ul>
+          <li>애플리케이션 유형: <strong>웹 애플리케이션</strong> 선택</li>
+          <li>승인된 JavaScript 원본에 아래 주소를 입력합니다:
+            <br><code>http://localhost:3000</code>, <code>http://localhost:5000</code>, 그리고 실제 운영 주소인 <code>https://onions-lab.xyz</code>
+          </li>
+        </ul>
+      </li>
+      <li>생성 버튼을 누르면 나오는 <strong>[OAuth 클라이언트 ID]</strong>와 <strong>[API 키]</strong> 값을 복사합니다.</li>
+    </ol>
+
+    <h2>3. 최초 접속 시 프로그램 환경 설정</h2>
+    <ol>
+      <li>배포된 사이트 주소(예: <code>https://onions-lab.xyz</code>)에 접속합니다.</li>
+      <li>화면 우측 상단의 **[구글 클라우드]** 모드를 클릭하여 선택합니다.</li>
+      <li>그 옆의 ⚙️ (설정) 아이콘을 클릭하여 발급받은 **[OAuth Client ID]**와 **[API Key]**를 차례로 입력하고 **[설정 저장 및 연동]**을 누릅니다.</li>
+      <li>우측 상단의 파란색 **[구글 연동 로그인]**을 눌러 본인의 계정으로 구글 로그인을 승인합니다.</li>
+    </ol>
+
+    <div class="alert-accent">
+      <strong>📁 폴더 구조 자동 부트스트랩 기능:</strong><br>
+      로그인이 완료되면 본인의 구글 드라이브 내에 <code>01_장기보험_고객관리</code>라는 루트 폴더와 그 아래 자음별 서브 폴더들(<code>ㄱ</code>, <code>ㄴ~ㅅ</code>, <code>ㅇ</code>, <code>ㅈ~ㅎ</code> 등)이 없을 시, 시스템이 자동으로 감지하여 **해당 표준 디렉터리를 100% 자동으로 구축**해 줍니다.
+    </div>
+
+    <h2>4. 주요 핵심 기능 사용 가이드</h2>
+
+    <h3>📍 신규 고객 추가 및 폴더 매칭</h3>
+    <ul>
+      <li>사이드바 검색칸 우측의 <strong>`+` (초록색 버튼)</strong>을 누르면 신규 등록 모달이 열립니다.</li>
+      <li>고객의 이름, 주소, 생년월일, 계약일을 입력한 뒤 완료를 누르면, 한글 자음에 알맞은 폴더(예: '김철수' 입력 시 'ㄱ' 폴더 아래 '김철수' 폴더)를 생성하고 <code>상담일지.json</code> 구조를 자동 할당합니다.</li>
+    </ul>
+
+    <h3>🩺 ISAP 진료차트 상담 기록</h3>
+    <p>의사들의 진료 처방 기법인 SOAP 형식을 변형하여 설계사 업무에 특화된 차트 작성 양식을 제공합니다.</p>
+    <table>
+      <thead>
+        <tr>
+          <th style="width: 25%">구분</th>
+          <th style="width: 25%">명칭</th>
+          <th>기록 요령</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>I (Inquiry)</strong></td>
+          <td>고객 니즈</td>
+          <td>고객 가입 목적, 가족력, 질병 기왕력, 희망 월 보험료 규모 등 기록.</td>
+        </tr>
+        <tr>
+          <td><strong>A (Analysis)</strong></td>
+          <td>보장 분석</td>
+          <td>기존 보유하고 있는 담보 분석 결과 (진단비 과소, 만기 부족 여부 등) 기록.</td>
+        </tr>
+        <tr>
+          <td><strong>P (Proposal)</strong></td>
+          <td>맞춤 제안</td>
+          <td>부족한 담보를 메우기 위해 설계한 신규 청약 추천 및 당사 제안 내용 기록.</td>
+        </tr>
+        <tr>
+          <td><strong>P (Post-Plan)</strong></td>
+          <td>향후 계획</td>
+          <td>설계서 전달 약속일, 2차 내방 상담 조율 시간, 청약 체결 목표일 기록.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>📍 내 주변 고객 지도 (터치 영업용)</h3>
+    <ul>
+      <li>상단 <strong>[고객 위치 지도]</strong> 탭을 누르면 설계사 본인의 실시간 GPS 위치가 파란색 동그라미로 지도에 매핑됩니다.</li>
+      <li>주소가 등록되어 있는 고객들의 위치 정보가 지도 위에 마커 핀으로 렌더링됩니다.</li>
+      <li>마커를 클릭하면 고객의 요약 프로필과 함께 <strong>[상담 차트 열기]</strong> 링크가 제공되어 즉석에서 이력을 볼 수 있습니다.</li>
+    </ul>
+
+    <h3>📅 구글 캘린더 기념일 연동</h3>
+    <ul>
+      <li>고객의 상세 페이지 상단 프로필 패널에 표시된 생년월일과 보험 계약일 옆의 **[+ (캘린더 추가)]** 아이콘을 클릭합니다.</li>
+      <li>구글 캘린더 API를 호출하여 매년 잊지 않고 챙길 수 있는 반복 알림 일정(🎂 [고객명] 생일, 📜 [고객명] 계약일)이 캘린더에 연간 Recurring 규칙으로 즉시 주입됩니다.</li>
+    </ul>
+
+    <h3>💳 실시간 3D 디지털 명함 발급</h3>
+    <ul>
+      <li>상단 <strong>[디지털 명함]</strong> 탭에서 본인의 소속, 이름, 전화번호, 이메일, 상담 카카오톡 주소를 설정합니다.</li>
+      <li><strong>[명함 링크 복사]</strong> 버튼을 누르면 고객에게 보낼 수 있는 인터넷 링크가 자동 생성됩니다.</li>
+      <li>고객이 스마트폰으로 이 링크를 받으면, 모바일 화면 전체에 설계사의 화려한 입체 명함(플립 회전 가능)과 카카오톡 직통 문의 버튼이 나타납니다.</li>
+    </ul>
+
+    <h2>5. 자주 묻는 질문 (FAQ)</h2>
+    <p><strong>Q. 모바일 폰으로 onions-lab.xyz에 들어갔을 때 '로컬 서버 오류'가 계속 뜹니다.</strong><br>
+    A. 모바일 기기는 PC와 같은 로컬 하드웨어가 없습니다. 화면 우측 상단의 [로컬 PC] 대신 <strong>[구글 클라우드]</strong> 모드를 눌러 전환하신 후 사용하시면 정상 로그인 및 스캔이 가능합니다.</p>
+    
+    <p><strong>Q. 구글 로그인 시 '안전하지 않은 앱' 혹은 '권한 없음' 경고창이 나옵니다.</strong><br>
+    A. 구글 콘솔(GCP)에서 OAuth 동의화면 제작 시 [게시(Publishing)]를 하지 않고 개발 테스트용 상태로 두어 나타나는 정상적인 절차입니다. 경고 하단의 <strong>[고급] -> [onions-lab.xyz(으)로 이동(안전하지 않음)]</strong>을 클릭하여 넘어가 주시면 정상 작동합니다.</p>
+
+    <p><strong>Q. 고객 거주 주소를 넣었는데 지도에 마커가 생기지 않습니다.</strong><br>
+    A. 지오코딩 API 호출이 이루어지려면 주소가 명확해야 합니다. 동/호수 같은 상세 주소는 생략하고, 행정동(예: '서울특별시 강남구 테헤란로 152')까지만 주소록에 적어두시면 구글 지도 매핑 성공률이 크게 향상됩니다.</p>
+
+    <button class="print-btn" onclick="window.print()">📄 PDF 매뉴얼 인쇄하기</button>
+  </div>
+
+</body>
+</html>

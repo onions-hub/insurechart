@@ -1439,7 +1439,7 @@ function App() {
                   <strong>💡 구글 API 세팅 가이드:</strong><br />
                   1. GCP(console.cloud.google.com) 로그인 및 프로젝트 생성.<br />
                   2. <strong>Google Drive API / Geocoding API / Maps JavaScript API / Google Calendar API</strong> 활성화.<br />
-                  3. OAuth 동의 화면에서 <strong>.../auth/calendar</strong> 범위 권한 등록.<br />
+                  3. OAuth 동의 화면에서 <strong>.../auth/drive.file</strong> 및 <strong>.../auth/calendar.events</strong> 범위 권한을 추가해 주세요.<br />
                   4. 사용자 인증 정보 탭에서 [API 키] 및 [OAuth 클라이언트 ID] 발급.<br />
                   5. 승인된 JavaScript 원본에 <code>http://localhost:3000</code>, <code>http://localhost:5000</code> 및 본인의 웹 서버 도메인을 반드시 등록해 주세요.
                 </div>
