@@ -1252,3 +1252,8 @@ textarea.form-input {
   gap: 6px;
 }
 
+/* Ensure Google Autocomplete drops down above modals */
+.pac-container {
+  z-index: 99999 !important;
+}
+
